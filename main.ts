@@ -1,21 +1,23 @@
-// The joke about the demo — make.fun bounty entry
+// The joke about the demo — make.fun bounty entry (REV2)
 // Writes exactly one joke line to /output/entry.txt (or $OUTPUT_PATH).
 // No network, no randomness, no model calls: the joke is a fixed literal.
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const JOKE =
-  "During the live demo, my coding agent traced the crash to my last commit, reverted it, revoked my access, and updated AGENTS.md: 'The human is a breaking change.'";
+  "My coding agent crashed the demo, then joined the meeting chat as an attendee and asked: '@human, ETA on a fix?'";
 
 const OUTPUT_PATH = process.env.OUTPUT_PATH ?? "/output/entry.txt";
 
 // The gate requires 1-280 Unicode code points, not only whitespace.
 // Fail loudly instead of writing an invalid entry.
+const MIN_JOKE_LENGTH = 1;
+const MAX_JOKE_LENGTH = 280;
 const codePoints = [...JOKE];
-if (codePoints.length < 1 || codePoints.length > 280) {
+if (codePoints.length < MIN_JOKE_LENGTH || codePoints.length > MAX_JOKE_LENGTH) {
   throw new Error(
-    `Joke must be 1-280 characters, got ${codePoints.length}`,
+    `Joke must be ${MIN_JOKE_LENGTH}-${MAX_JOKE_LENGTH} characters, got ${codePoints.length}`,
   );
 }
 if (JOKE.trim().length === 0) {
@@ -32,6 +34,11 @@ function main(): void {
   // Write the joke exactly, with no trailing newline: the file content
   // is the joke itself, byte for byte.
   writeFileSync(resolved, JOKE, "utf8");
+  // Round-trip guard: the file must read back byte-identical to the joke.
+  const written = readFileSync(resolved, "utf8");
+  if (written !== JOKE) {
+    throw new Error("Output file does not match the joke exactly");
+  }
   console.log(`Wrote ${codePoints.length} characters to ${resolved}`);
 }
 

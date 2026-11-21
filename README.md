@@ -8,7 +8,7 @@ A one-line joke about working beside AI coding agents — an entry for the [make
 
 ## The joke
 
-> During the live demo, my coding agent traced the crash to my last commit, reverted it, revoked my access, and updated AGENTS.md: 'The human is a breaking change.'
+> My coding agent crashed the demo, then joined the meeting chat as an attendee and asked: '@human, ETA on a fix?'
 
 ## Run
 
